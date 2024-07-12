@@ -51,6 +51,7 @@ Dictionary consolidationWords;
 typedef struct {
     User users[Max_USERS];
     int size;
+    int currentUserIndex;  // Index of the currently signed-inn user
 } UserDatabase;
 
 
@@ -700,19 +701,67 @@ void createQuiz(UserLearnedWords *user) {
 
 
 void showUserInformation(UserDatabase *db) {
-    printf("User Information:\n");
-
-    for (int i = 0; i < db->size; i++) {
-        printf("User %d:\n", i + 1);
-        printf("  First Name: %s\n", db->users[i].firstName);
-        printf("  Last Name: %s\n", db->users[i].lastName);
-        printf("  Username: %s\n", db->users[i].username);
-        printf("  Phone: %s\n", db->users[i].phone);
-        printf("  Email: %s\n", db->users[i].email);
-        printf("\n");
+    int currentUserIndex = db->currentUserIndex;
+    if (currentUserIndex == -1) {
+        printf("No user signed in!\n");
+        return;
     }
+
+    printf("User Information:\n");
+    printf("First Name: %s\n", db->users[currentUserIndex].firstName);
+    printf("Last Name: %s\n", db->users[currentUserIndex].lastName);
+    printf("Username: %s\n", db->users[currentUserIndex].username);
+    printf("Phone: %s\n", db->users[currentUserIndex].phone);
+    printf("Email: %s\n", db->users[currentUserIndex].email);
+    printf("\n");
 }
 
+void editInformation(UserDatabase *db) {
+    int currentUserIndex = db->currentUserIndex;
+    if (currentUserIndex == -1) {
+        printf("No user signed in!\n");
+        return;
+    }
+
+    printf("Editing User Information:\n");
+
+    // Provide options to edit fields
+    printf("1. Edit First Name (%s)\n", db->users[currentUserIndex].firstName);
+    printf("2. Edit Last Name (%s)\n", db->users[currentUserIndex].lastName);
+    printf("3. Edit Phone Number (%s)\n", db->users[currentUserIndex].phone);
+    printf("4. Edit Email (%s)\n", db->users[currentUserIndex].email);
+    printf("5. Back\n");
+
+    int choice;
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+    getchar();  // Consume newline character
+
+    switch (choice) {
+        case 1:
+            printf("Enter new first name: ");
+            scanf("%s", db->users[currentUserIndex].firstName);
+            printf("First name updated!\n");
+            break;
+        case 2:
+            printf("Enter new last name: ");
+            scanf("%s", db->users[currentUserIndex].lastName);
+            printf("Last name updated!\n");
+            break;
+        case 3:
+            printf("Enter new phone number: ");
+            scanf("%s", db->users[currentUserIndex].phone);
+            printf("Phone number updated!\n");
+            break;
+        case 4:
+            printf("Enter new email: ");
+            scanf("%s", db->users[currentUserIndex].email);
+            printf("Email updated!\n");
+            break;
+        default:
+            printf("Invalid choice!\n");
+    }
+}
 
 void UserMenu(UserDatabase* usrdtbs,UserLearnedWords*  lrndwrd){
     ltrboxwords *ltrltr = nullptr;
@@ -738,6 +787,10 @@ void UserMenu(UserDatabase* usrdtbs,UserLearnedWords*  lrndwrd){
             showUserInformation(usrdtbs);
             break;
         }
+        case 5 :{
+            editInformation(usrdtbs);
+            break;
+        }
         default:
             break;
     }
@@ -745,7 +798,7 @@ void UserMenu(UserDatabase* usrdtbs,UserLearnedWords*  lrndwrd){
 }
 
 
-void UserOrAdmin(UserDatabase* usrdtbs,ltrboxwords* ltrltr, UserLearnedWords* lrndwrd){
+void UserOrAdmin(UserDatabase* usrdtbs, ltrboxwords* ltrltr, UserLearnedWords* lrndwrd) {
     char username_input[Max_Username_Length];
     char password_input[Max_Password_Length];
 
@@ -754,13 +807,22 @@ void UserOrAdmin(UserDatabase* usrdtbs,ltrboxwords* ltrltr, UserLearnedWords* lr
     printf("Please Enter Password!\n");
     scanf("%s", password_input);
 
-    if (strcmp(username_input, "Admin") == 0 && strcmp(password_input, "Admin") == 0) {
-        printf("Welcome To Admin panel\n");
-        adminMenu(usrdtbs);
-    } else {
-        printf("Welcome To User panel\n");
-        UserMenu(usrdtbs,lrndwrd);
+    for (int i = 0; i < usrdtbs->size; i++) {
+        if (strcmp(usrdtbs->users[i].username, username_input) == 0 && strcmp(usrdtbs->users[i].password, password_input) == 0) {
+            usrdtbs->currentUserIndex = i;  // Set the current user index
+            printf("Login Successful!\n");
+            if (strcmp(username_input, "Admin") == 0 && strcmp(password_input, "Admin") == 0) {
+                printf("Welcome To Admin panel\n");
+                adminMenu(usrdtbs);
+            } else {
+                printf("Welcome To User panel\n");
+                UserMenu(usrdtbs, lrndwrd);
+            }
+            return;
+        }
     }
+
+    printf("Invalid username or password!\n");
 }
 
 
