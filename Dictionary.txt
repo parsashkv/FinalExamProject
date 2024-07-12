@@ -1,0 +1,201 @@
+English to Persian, 10 word is available in dictionary
+1- word: programmer, translation: barname nevis
+2- word: word, translation: kalame
+3- word: student, translation: danesh amoz-daneshjo
+4- word: freedom, translation: azadi
+5- word: boy, translation: pesar
+6- word: psychiatrist, translation: ravan pezeshk
+7- word: sweetheart, translation: azizam-shirinam
+8- word: Teacher assistant, translation: dastyar ostad
+9- word: bow, translation: tirkaman-roban-tazim kardan
+11- word: cat, translation: gorbe
+12- word: sun, translation: khorshid
+13- word: music, translation: ahang
+14- word: house, translation: khane
+15- word: milk, translation: shir
+16- word: car, translation: mashin
+17- word: book, translation: ketab
+18- word: water, translation: aab
+19- word: fruit, translation: mive
+20- word: hand, translation: dast
+21- word: winter, translation: zemestan
+22- word: spring, translation: bahar
+23- word: fall, translation: paeiz
+24- word: summer, translation: tabestan
+25- word: yellow, translation: zard
+26- word: red, translation: ghermez
+27- word: green, translation: sabz
+28- word: black, translation: siah
+29- word: white, translation: sefid
+30- word: orange, translation: narengi
+31- word: purple, translation: banafsh
+32- word: morning, translation: sobh
+33- word: dark, translation: tarik,tireh
+34- word: noon, translation: zohr
+35- word: afternoon, translation: bad az zohr
+36- word: one, translation: yek
+37- word: two, translation: adad 2
+38- word: three, translation: adad 3
+39- word: five, translation: adad 5
+40- word: ten, translation: adad 10
+41- word: woman, translation: zan
+42- word: man, translation: mard
+43- word: mother, translation: madar
+44- word: father, translation: pedar
+45- word: sister, translation: khahar
+46- word: brother, translation: baradar
+47- word: snake, translation: mar
+48- word: lion, translation: shir
+49- word: dog, translation: sag
+50- word: mouse, translation: moosh
+51- word: bear, translation: khers
+52- word: fish, translation: mahi
+53- word: girl, translation: dokhtar
+54- word: bird, translation: parande
+55- word: cow, translation: gav
+56- word: seven, translation: adad 7
+57- word: sheep, translation: goosfand
+58- word: horse, translation: asb
+59- word: goat, translation: boz
+60- word: bee, translation: zanboor
+61- word: tiger, translation: babr
+62- word: elephant, translation: fil
+63- word: monkey, translation: meimoon
+64- word: donkey, translation: khar
+65- word: camel, translation: shotor
+66- word: buffalo, translation: gavmish
+67- word: chicken, translation: morgh
+68- word: bread, translation: nan
+69- word: lemon, translation: limoo
+70- word: tomato, translation: goje
+71- word: potato, translation: sib zamini
+72- word: apple, translation: sib
+73- word: date, translation: khorma, gharar asheghane
+74- word: orange, translation: porteghal
+75- word: banana, translation: moz
+76- word: mango, translation: anbe
+77- word: grape, translation: angoor
+78- word: peach, translation: holoo
+79- word: cherry, translation: albaloo
+80- word: olive, translation: zeytoon
+81- word: happy, translation: khosh hal
+82- word: tired, translation: khaste
+83- word: yesterday, translation: diroz
+84- word: today, translation: emrooz
+85- word: light, translation: cheragh
+86- word: bag, translation: kif
+87- word: window, translation: panjere
+88- word: school, translation: madrese
+89- word: garden, translation: bagh che
+90- word: moon, translation: mah
+91- word: star, translation: setare
+92- word: sky, translation: aseman
+93- word: earth, translation: zamin
+94- word: airplane, translation: hava peyma
+95- word: hand, translation: dast
+96- word: eye, translation: cheshm
+97- word: ear, translation: goosh
+98- word: leg, translation: pa
+99- word: hair, translation: moo
+100- word: arm, translation: bazoo
+101- word: t-shirt, translation: tishert
+102- word: engineer, translation: mohandes
+103- word: university, translation: danesh gah
+104- word: layer, translation: vakil
+105- word: hat, translation: kolah
+106- word: fan, translation: panke
+107- word: glass, translation: livan
+108- word: door, translation: dar
+109- word: toy, translation: asbab bazi
+110- word: screen, translation: safhe
+111- word: pen, translation: medad
+112- word: penceil, translation: khod kar
+113- word: pellow, translation: balesht
+114- word: lock, translation: ghofl
+115- word: dog, translation: sag
+116- word: head, translation: sar
+117- word: moblie phone, translation: telephon hamrah
+118- word: tear, translation: ashk, terekidan
+119- word: friend, translation: doost
+120- word: clock, translation: sa at
+121- word: boss, translation: modir
+122- word: message, translation: payam
+123- word: shut, translation: bastan
+124- word: hold, translation: negah dashtan
+125- word: ray, translation: parto
+126- word: lung, translation: rie
+127- word: factory, translation: kar khane
+128- word: vessle, translation: rag
+129- word: blood, translation: khoon
+130- word: tooth, translation: dandan
+131- word: mark, translation: alamat, nomre
+132- word: spit, translation: tof kardan
+133- word: hook, translation: gholab, tale
+134- word: story, translation: dastan
+135- word: manners, translation: adab
+136- word: muddy, translation: gel alood
+137- word: acuracy, translation: deghat
+138- word: spare, translation: yadaki
+139- word: tomorrow, translation: farda
+140- word: pull, translation: keshidan
+141- word: united, translation: motahed
+142- word: wipe, translation: pak kardan
+143- word: oar, translation: paroo
+144- word: ruler, translation: khat kesh
+145- word: reason, translation: dalil
+146- word: thin, translation: raghigh
+147- word: flat, translation: saf, takht
+148- word: bed, translation: takht
+149- word: step, translation: ghadam
+150- word: grandfather, translation: pedar bozorg
+151- word: grandmother, translation: madar bozorg
+152- word: library, translation: ketab khane
+153- word: database, translation: paygah dade
+154- word: hardware, translation: sakht afzar
+155- word: software, translation: narm afzar
+156- word: cloud, translation: abr
+157- word: download, translation: danlood
+158- word: memory, translation: hafeze
+159- word: printer, translation: printer
+160- word: password, translation: ramz
+161- word: browser, translation: moroor gar
+162- word: virus, translation: viroos
+163- word: malware, translation: bad afzar
+164- word: file, translation: fail
+165- word: turnoff, translation: khamoosh kardan
+166- word: fail, translation: shekast
+167- word: folder, translation: pooshe
+168- word: compiler, translation: tafsir gar
+169- word: hello, translation: salam
+170- word: heavy, translation: sangin
+171- word: vacation, translation: tatilat
+172- word: smart, translation: bahoosh
+173- word: sweet, translation: shirin
+174- word: finger, translation: angosht
+175- word: numb, translation: bihes
+176- word: flu, translation: sarma khordegi
+177- word: funny, translation: khande dar
+178- word: family, translation: khanevade
+179- word: clever, translation: bahoosh
+180- word: nice, translation: khoob
+181- word: friendly, translation: doostane
+182- word: lamp, translation: lamp
+183- word: history, translation: tarikh che
+184- word: new, translation: jadid
+185- word: old, translation: ghadimi
+186- word: mustache, translation: sibil
+187- word: nose, translation: bini
+188- word: ghost, translation: rooh
+189- word: werstler, translation: koshti gir
+190- word: i, translation: man
+191- word: happy, translation: khoshal
+192- word: to, translation: be
+193- word: meet, translation: molaghat, ashnaei
+194- word: you, translation: to
+195- word: my, translation: baraye man
+196- word: frinds, translation: doostan
+197- word: keep, translation: negah dashtan
+198- word: going, translation: raftan
+199- word: strong, translation: ghavi
+200- word: finish, translation: tamam kardan
+EOF

@@ -1,0 +1,20 @@
+# ninja log v5
+18	139	7424981399619090	CMakeFiles/Project.dir/main.c.obj	5bc512e53b05c281
+2	254	7424982445272366	build.ninja	a4e1df9dcc8764e3
+139	222	7424981400402955	Project.exe	33c5299aa8a59a1d
+3	134	7424958719448595	CMakeFiles/Project.dir/projjj.c.obj	7643637a3a1fc3ea
+27	99	7423094479007644	CMakeFiles/Project.dir/discrete_mathematics_project.c.obj	37418942c6716071
+21	66	7424981398892132	CMakeFiles/Project.dir/QX_ParsaShirkavand_40225043.c.obj	60e418fc7303aa67
+2	316	7424982445272366	build.ninja	a4e1df9dcc8764e3
+15	181	7424982448148978	CMakeFiles/Project.dir/FinalProjectBP.c.obj	6bc28b495cd3f139
+182	283	7424982449150242	Project.exe	448b625b782a07e4
+6	156	7424995884123812	CMakeFiles/Project.dir/FinalProjectBP.c.obj	6bc28b495cd3f139
+157	294	7424995885361972	Project.exe	448b625b782a07e4
+4	163	7424997216703858	CMakeFiles/Project.dir/FinalProjectBP.c.obj	6bc28b495cd3f139
+165	344	7424997218528858	Project.exe	448b625b782a07e4
+3	146	7425000303837379	CMakeFiles/Project.dir/FinalProjectBP.c.obj	6bc28b495cd3f139
+146	253	7425000304886105	Project.exe	448b625b782a07e4
+3	134	7425000804130176	CMakeFiles/Project.dir/FinalProjectBP.c.obj	6bc28b495cd3f139
+135	221	7425000804970421	Project.exe	448b625b782a07e4
+5	168	7425002399430871	CMakeFiles/Project.dir/FinalProjectBP.c.obj	6bc28b495cd3f139
+169	280	7425002400536671	Project.exe	448b625b782a07e4
