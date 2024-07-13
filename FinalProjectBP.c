@@ -20,7 +20,7 @@
 
 
 #define USERS_FILE "C:/Users/Parsa/CLionProjects/Project/users.txt"
-#define ADMIN_FILE"C:/Users/Parsa/CLionProjects/Project/admin.txt"
+#define ADMIN_FILE "C:/Users/Parsa/CLionProjects/Project/admin.txt"
 #define DICTIONARY_FILE "C:/Users/Parsa/CLionProjects/Project/Dictionary.txt"
 
 
@@ -175,7 +175,6 @@ void loadAdminFromFile() {
 
                     meaning = strtok(NULL, "-\n");
                 }
-                printf("Added word: %s\n", dictionary.words[dictionary.size].word);
                 dictionary.size++;
                 if (dictionary.size >= Max_Words) {
                     printf("Dictionary is full!\n");
@@ -283,6 +282,7 @@ void addWord() {
 
     dictionary.words[dictionary.size++] = newWord;
     printf("Word added successfully!\n");
+    saveAdminToFile(&dictionary);
     clear_screen();
 }
 
@@ -324,6 +324,7 @@ void editWord() {
                     } else {
                         printf("Invalid index!\n");
                     }
+                    saveAdminToFile(&dictionary);
                 }
             } while (choice != 3);
             return;
@@ -347,6 +348,7 @@ void removeWord() {
             }
             dictionary.size--;
             printf("Word removed successfully!\n");
+            saveAdminToFile(&dictionary);
             return;
         }
     }
