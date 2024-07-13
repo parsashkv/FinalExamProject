@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
 #include <time.h>
 
 
@@ -20,14 +19,9 @@
 #define Max_Meaning_Length 100
 
 
-typedef struct {
-    char firstName[Max_Name_Length];
-    char lastName[Max_Name_Length];
-    char username[Max_Username_Length];
-    char password[Max_Password_Length];
-    char phone[Max_Phone_Length];
-    char email[Max_Email_Length];
-} User;
+#define USERS_FILE "C:/Users/Parsa/CLionProjects/Project/users.txt"
+#define ADMIN_FILE"C:/Users/Parsa/CLionProjects/Project/admin.txt"
+#define DICTIONARY_FILE "C:/Users/Parsa/CLionProjects/Project/Dictionary.txt"
 
 
 typedef struct {
@@ -36,16 +30,30 @@ typedef struct {
     int meaningCount;
 } Word;
 
+struct LitnerBoxWord {
+    Word word;
+    struct LitnerBoxWord *next;
+};
+
+typedef struct {
+    char firstName[Max_Name_Length];
+    char lastName[Max_Name_Length];
+    char username[Max_Username_Length];
+    char password[Max_Password_Length];
+    char phone[Max_Phone_Length];
+    char email[Max_Email_Length];
+    struct LitnerBoxWord* new;
+    struct LitnerBoxWord* review;
+    struct LitnerBoxWord* consolidation;
+    struct LitnerBoxWord* learned;
+
+} User;
+
 
 typedef struct {
     Word words[Max_Words];
     int size;
 } Dictionary;
-
-
-Dictionary newWords;
-Dictionary reviewWords;
-Dictionary consolidationWords;
 
 
 typedef struct {
@@ -55,36 +63,129 @@ typedef struct {
 } UserDatabase;
 
 
-typedef struct ltrboxwords {
-    Dictionary *boxwords;
-    Word *word_info;
-    struct ltrboxwords* next;
-} ltrboxwords;
-
-
-typedef struct {
-    ltrboxwords* head;
-} litnerbox_head;
-
-
 typedef struct {
     Dictionary learnedwords;
 } UserLearnedWords;
 
 
 /////////////////
+Dictionary dictionary = {0};
+/////////////////
 
 
-void LitnerFullPack(ltrboxwords* ltrboxwords1);
-void adminMenu(UserDatabase* database);
-void searching_new_words();
-
-
+void adminMenu(UserDatabase *database);
 
 
 
 void clear_screen() {
     system("cls");
+}
+
+
+void saveUsersToFile(UserDatabase *db) {
+    FILE *file = fopen(USERS_FILE, "w");
+    if (file == NULL) {
+        printf("Error opening file for writing!\n");
+        return;
+    }
+
+    for (int i = 0; i < db->size; i++) {
+        fprintf(file, "%s %s %s %s %s %s\n", db->users[i].firstName, db->users[i].lastName, db->users[i].username,
+                db->users[i].password, db->users[i].phone, db->users[i].email);
+    }
+
+    fclose(file);
+}
+
+void saveAdminToFile(Dictionary *dict) {
+    FILE *file = fopen(ADMIN_FILE, "w");
+    if (file == NULL) {
+        printf("Error opening admin file for writing!\n");
+        return;
+    }
+
+    for (int i = 0; i < dict->size; i++) {
+        fprintf(file, "%s:", dict->words[i].word);
+        for (int j = 0; j < dict->words[i].meaningCount; j++) {
+            fprintf(file, " %s", dict->words[i].meanings[j]);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+}
+
+void loadUsersFromFile(UserDatabase *db) {
+    FILE *file = fopen(USERS_FILE, "r");
+    if (file == NULL) {
+        printf("No existing users found.\n");
+        return;
+    }
+
+    while (fscanf(file, "%s %s %s %s %s %s", db->users[db->size].firstName, db->users[db->size].lastName,
+                  db->users[db->size].username, db->users[db->size].password, db->users[db->size].phone,
+                  db->users[db->size].email) != EOF) {
+        db->size++;
+    }
+
+    fclose(file);
+}
+
+void loadAdminFromFile() {
+    FILE *file = fopen(DICTIONARY_FILE, "r");
+    if (file == NULL) {
+        printf("No admin words found.\n");
+        return;
+    }
+
+    char line[200];
+    while (fgets(line, sizeof(line), file)) {
+
+        char *word_pos = strstr(line, "word: ");
+        if (word_pos != NULL) {
+            word_pos += strlen("word: ");
+            char *end_word_pos = strstr(word_pos, ", translation:");
+            if (end_word_pos != NULL) {
+                *end_word_pos = '\0';
+                char *word = word_pos;
+
+                while (*word == ' ') word++;
+                char *word_end = word + strlen(word) - 1;
+                while (word_end > word && *word_end == ' ') word_end--;
+                *(word_end + 1) = '\0';
+
+                strcpy(dictionary.words[dictionary.size].word, word);
+                dictionary.words[dictionary.size].meaningCount = 0;
+
+                char *translation_pos = end_word_pos + strlen(", translation: ");
+                char *meaning = strtok(translation_pos, "-\n");
+                while (meaning != NULL) {
+                    if (dictionary.words[dictionary.size].meaningCount >= Max_Meanings) {
+                        printf("Too many meanings for word: %s\n", dictionary.words[dictionary.size].word);
+                        break;
+                    }
+
+                    while (*meaning == ' ') meaning++;
+                    char *meaning_end = meaning + strlen(meaning) - 1;
+                    while (meaning_end > meaning && *meaning_end == ' ') meaning_end--;
+                    *(meaning_end + 1) = '\0';
+
+                    strcpy(dictionary.words[dictionary.size].meanings[dictionary.words[dictionary.size].meaningCount], meaning);
+                    dictionary.words[dictionary.size].meaningCount++;
+
+                    meaning = strtok(NULL, "-\n");
+                }
+                printf("Added word: %s\n", dictionary.words[dictionary.size].word);
+                dictionary.size++;
+                if (dictionary.size >= Max_Words) {
+                    printf("Dictionary is full!\n");
+                    break;
+                }
+            }
+        }
+    }
+
+    fclose(file);
 }
 
 
@@ -120,8 +221,8 @@ void signUp(UserDatabase *db) {
     db->size++;
 
     printf("Sign up successful!\n");
+    saveUsersToFile(db);  // Save users to file after signing up
 }
-
 
 
 void forgotPassword(UserDatabase *db) {
@@ -140,17 +241,13 @@ void forgotPassword(UserDatabase *db) {
             scanf("%s", newPassword);
             strcpy(db->users[i].password, newPassword);
             printf("Password reset successful!\n");
+            saveUsersToFile(db);
             return;
         }
     }
 
     printf("Invalid username or phone number!\n");
 }
-
-
-
-
-Dictionary dictionary = {0};
 
 
 void addWord() {
@@ -329,7 +426,8 @@ void readFromFile() {
                     *(meaning_end + 1) = '\0';
 
                     // Add meaning to word in dictionary
-                    strcpy(dictionary.words[dictionary.size].meanings[dictionary.words[dictionary.size].meaningCount], meaning);
+                    strcpy(dictionary.words[dictionary.size].meanings[dictionary.words[dictionary.size].meaningCount],
+                           meaning);
                     dictionary.words[dictionary.size].meaningCount++;
 
                     // Get next meaning
@@ -350,7 +448,7 @@ void readFromFile() {
 }
 
 
-void adminMenu(UserDatabase* database) {
+void adminMenu(UserDatabase *database) {
     int choice;
 
     while (1) {
@@ -389,24 +487,6 @@ void adminMenu(UserDatabase* database) {
 }
 
 
-void initLeitnerBox(litnerbox_head *box) {
-    box->head = NULL;
-}
-
-
-void addWordToLeitnerBox(litnerbox_head *box, Word *word) {
-    ltrboxwords *newNode = (ltrboxwords *)malloc(sizeof(ltrboxwords));
-    if (newNode == NULL) {
-        printf("Memory allocation failed!\n");
-        return;
-    }
-    newNode->boxwords = (Dictionary *)word;
-    newNode->next = box->head;
-    box->head = newNode;
-    printf("Word '%s' added to the Leitner box!\n", word->word);
-}
-
-
 int has_one_difference(const char *word1, const char *word2) {
     int length1 = strlen(word1);
     int length2 = strlen(word2);
@@ -428,10 +508,7 @@ int has_one_difference(const char *word1, const char *word2) {
 }
 
 
-void searching_new_words() {
-    litnerbox_head box;
-    initLeitnerBox(&box); // Initialize Leitner box
-
+void searching_new_words(User *user) {
     char str[Max_Word_Length];
     printf("Please Enter The Word To Find: ");
     scanf("%s", str);
@@ -452,7 +529,11 @@ void searching_new_words() {
             scanf(" %c", &option);
 
             if (option == '+') {
-                addWordToLeitnerBox(&box, &dictionary.words[i]);
+                // Add word to user Leitner box
+                struct LitnerBoxWord *newWord = (struct LitnerBoxWord *) malloc(sizeof(struct LitnerBoxWord));
+                newWord->word = dictionary.words[i];
+                newWord->next = user->new;
+                user->new = newWord;
                 printf("Word '%s' added to the Leitner box!\n", dictionary.words[i].word);
             } else if (option == '=') {
                 if (dictionary.words[i].meaningCount >= Max_Meanings) {
@@ -484,7 +565,7 @@ void searching_new_words() {
 }
 
 
-void delete_word(Dictionary* dict, int index) {
+void delete_word(Dictionary *dict, int index) {
     // Shift words to fill the gap
     for (int i = index; i < dict->size - 1; i++) {
         dict->words[i] = dict->words[i + 1];
@@ -493,7 +574,7 @@ void delete_word(Dictionary* dict, int index) {
 }
 
 
-void edit_meanings(Word* word) {
+void edit_meanings(Word *word) {
     clear_screen();
     printf("Editing meanings for: %s\n", word->word);
     printf("Enter new meanings (press Enter to finish):\n");
@@ -522,132 +603,225 @@ void edit_meanings(Word* word) {
     }
 }
 
-
-void LitnerFullPack(ltrboxwords* ltrboxwords1) {
-    for (int i = 0; i < ltrboxwords1->boxwords->size; i++) {
-        clear_screen();
-        printf("%s\n",ltrboxwords1->word_info[i].word);
-        printf("Press 'Space' to see the meaning...\n");
-        while (getch() != ' ') {
-            for (int counter = 0; counter < ltrboxwords1->word_info->meaningCount; i++)
-                printf("Meaning %d: %s\n", i + 1, dictionary.words[i].meanings[i]);
-        }
-        printf("Press 'Enter' to move to the next word...\n");
-        while (getch() != '\r'); // Wait for Enter key
-    }
-    for (int i = 0 ; i < ltrboxwords1->boxwords->size; i++){
-        clear_screen();
-        printf("Review Part!\n");
-        printf("%s\n",ltrboxwords1->word_info[i].word);
-        printf("You Have 2 Options\n1.I have already known the word\n2.I did not know it\n3.Back\n");
-        int num;
-        scanf("%d",&num);
-        switch (num) {
-            // Move word to consolidation box
-            case 1 :
-            consolidationWords.words[consolidationWords.size++] = reviewWords.words[i];
-            // Remove the word from the review box
-            for (int j = i; j < reviewWords.size - 1; j++) {
-                reviewWords.words[j] = reviewWords.words[j + 1];
-            }
-            reviewWords.size--;
-            i--;  // Adjust index after removal
-            case 2 :
-                break;
-            case 3:
-                // Go back to the previous menu or exit review
-                return;
-        }
-    }
-    for (int i = 0; i < consolidationWords.size; i++) {
-        clear_screen();
-        printf("Consolidation Part!\n");
-        printf("%s\n", consolidationWords.words[i].word);
-        printf("You Have 2 Options\n1. I didn't know the word\n2. I learned the word\n3. Back\n");
+void iterateNewWords(User *user) {
+    struct LitnerBoxWord *list = user->new;
+    while (list != NULL) {
+        printf("%s\n", list->word.word);
+        printf("Choose one of the following options:\n");
+        printf("1. Move to the next word\n");
+        printf("2. show meanings\n");
+        printf("3. Back\n");
 
         int choice;
-        while ((choice = getch()) != '1' && choice != '2' && choice != '3');
-
+        scanf("%d", &choice);
         switch (choice) {
-            case '1':
-                // Move back to the review box
-                reviewWords.words[reviewWords.size++] = consolidationWords.words[i];
-                // Remove the word from the consolidation box
-                for (int j = i; j < consolidationWords.size - 1; j++) {
-                    consolidationWords.words[j] = consolidationWords.words[j + 1];
+            struct LitnerBoxWord *temp;
+            case 1:
+                // remove word from new list and add it to review list
+                if (user->review == NULL) {
+                    user->review = list;
+                    list = list->next;
+                } else {
+                    temp = list;
+                    list = list->next;
+                    temp->next = user->review;
+                    user->review = temp;
                 }
-                consolidationWords.size--;
-                i--;  // Adjust index after removal
+                printf("Word moved to review list!\n");
+                user->new = list;
                 break;
-            case '2':
-                // Move word to the next box (if applicable)
-                for (int j = i; j < consolidationWords.size - 1; j++) {
-                    consolidationWords.words[j] = consolidationWords.words[j + 1];
+            case 2:
+                printf("Meanings:\n");
+                for (int i = 0; i < list->word.meaningCount; i++) {
+                    printf("%d. %s\n", i + 1, list->word.meanings[i]);
                 }
-                consolidationWords.size--;
-                i--;  // Adjust index after removal
                 break;
-            case '3':
-                // Go back to the previous menu or exit consolidation
+            case 3:
                 return;
+
+            default:
+                printf("Invalid choice!\n");
         }
     }
-    int choice;
-    do {
-        clear_screen();
-        printf("Learned Words Review Part!\n");
-
-        // Display learned words
-        Dictionary learnedwords;
-        for (int i = 0; i < learnedwords.size; i++) {
-            printf("%d. %s\n", i + 1, learnedwords.words[i].word);
-        }
-
-        printf("Choose a word to review (Enter number), or '0' to go back: ");
-        scanf("%d", &choice);
-        getchar();  // Consume newline character
-
-        if (choice >= 1 && choice <= learnedwords.size) {
-            // Display meanings and options for the chosen word
-            clear_screen();
-            Word* chosenWord = &learnedwords.words[choice - 1];
-            printf("Word: %s\n", chosenWord->word);
-            for (int j = 0; j < chosenWord->meaningCount; j++) {
-                printf("Meaning %d: %s\n", j + 1, chosenWord->meanings[j]);
-            }
-            printf("\nOptions:\n");
-            printf("1. Edit meanings\n");
-            printf("2. Delete word\n");
-            printf("3. Back\n");
-
-            while (1) {
-                char option = getchar();
-                getchar();  // Consume newline character
-
-                switch (option) {
-                    case '1':
-                        // Edit meanings of the word
-                        edit_meanings(chosenWord);
-                        break;
-                    case '2':
-                        // Delete word from the learned words box
-                        delete_word(&learnedwords, choice - 1);
-                        break;
-                    case '3':
-                        // Go back to the previous menu
-                        break;
-                    default:
-                        printf("Invalid option.\n");
-                }
-
-                if (option == '3')
-                    break;
-            }
-        }
-    } while (choice != 0);
-    clear_screen();
-
+    printf("No more new words to review!\n");
 }
+
+void iterateReviewWords(User *user) {
+    struct LitnerBoxWord *list = user->review;
+    while (list != NULL) {
+        printf("%s\n", list->word.word);
+        printf("Choose one of the following options:\n");
+        printf("1. Move to the next word\n");
+        printf("2. show meanings\n");
+        printf("3. I know this word\n");
+        printf("4. I don't know this word\n");
+        printf("5. Back\n");
+
+        int choice;
+        scanf("%d", &choice);
+        switch (choice) {
+            struct LitnerBoxWord *temp;
+            case 1:
+                list = list->next;
+                break;
+            case 2:
+                printf("Meanings:\n");
+                for (int i = 0; i < list->word.meaningCount; i++) {
+                    printf("%d. %s\n", i + 1, list->word.meanings[i]);
+                }
+                break;
+            case 3:
+                // remove word from review list and add it to consolidation list
+                if (user->consolidation == NULL) {
+                    user->consolidation = list;
+                    list = list->next;
+                } else {
+                    temp = list;
+                    list = list->next;
+                    temp->next = user->consolidation;
+                    user->consolidation = temp;
+                }
+                printf("Word moved to consolidation list!\n");
+                user->review = list;
+                break;
+            case 4:
+                list = list->next;
+                break;
+            case 5:
+                return;
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+    printf("No more review words to review!\n");
+}
+
+void iterateConsolidationWords(User *user) {
+    struct LitnerBoxWord *list = user->consolidation;
+    while (list != NULL) {
+        printf("%s\n", list->word.word);
+        printf("Choose one of the following options:\n");
+        printf("1. Move to the next word\n");
+        printf("2. show meanings\n");
+        printf("3. I know this word\n");
+        printf("4. I don't know this word\n");
+        printf("5. Back\n");
+
+        int choice;
+        scanf("%d", &choice);
+        switch (choice) {
+            struct LitnerBoxWord *temp;
+            case 1:
+                list = list->next;
+                break;
+            case 2:
+                printf("Meanings:\n");
+                for (int i = 0; i < list->word.meaningCount; i++) {
+                    printf("%d. %s\n", i + 1, list->word.meanings[i]);
+                }
+                break;
+            case 3:
+                // remove word from consolidation list and add it to learned list
+                if (user->learned == NULL) {
+                    user->learned = list;
+                    list = list->next;
+                } else {
+                    temp = list;
+                    list = list->next;
+                    temp->next = user->learned;
+                    user->learned = temp;
+                }
+                printf("Word moved to learned list!\n");
+                user->consolidation = list;
+                break;
+            case 4:
+                if (user->review == NULL) {
+                    user->review = list;
+                    list = list->next;
+                } else {
+                    temp = list;
+                    list = list->next;
+                    temp->next = user->review;
+                    user->review = temp;
+                }
+                printf("Word moved to review list!\n");
+                user->consolidation = list;
+                break;
+            case 5:
+                return;
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+    printf("No more consolidation words to review!\n");
+}
+
+
+void iterateLearnedWords(User *user) {
+    struct LitnerBoxWord *list = user->learned;
+    while (list != NULL) {
+        printf("%s\n", list->word.word);
+        printf("Choose one of the following options:\n");
+        printf("1. Move to the next word\n");
+        printf("2. show meanings\n");
+        printf("3. Back\n");
+
+        int choice;
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                list = list->next;
+                break;
+            case 2:
+                printf("Meanings:\n");
+                for (int i = 0; i < list->word.meaningCount; i++) {
+                    printf("%d. %s\n", i + 1, list->word.meanings[i]);
+                }
+                break;
+            case 3:
+                return;
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+    printf("No more learned words to review!\n");
+}
+
+
+void litnerBoxMenu(User *user) {
+    int choice;
+
+    do {
+        printf("\nLitner Box Menu\n");
+        printf("1. View New Words\n");
+        printf("2. View Review Words\n");
+        printf("3. View Consolidation Words\n");
+        printf("4. View Learned Words\n");
+        printf("5. Back\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                iterateNewWords(user);
+                break;
+            case 2:
+                iterateReviewWords(user);
+                break;
+            case 3:
+                iterateConsolidationWords(user);
+                break;
+            case 4:
+                iterateLearnedWords(user);
+                break;
+            case 5:
+                return;
+            default:
+                printf("Invalid choice!\n");
+        }
+    } while (choice != 5);
+}
+
 
 
 void createQuiz(UserLearnedWords *user) {
@@ -674,7 +848,7 @@ void createQuiz(UserLearnedWords *user) {
         printf("Question %d: What is the meaning of the word '%s'?\n", i + 1, correctWord->word);
 
         char *options[4];
-        int usedIndices[4] = { -1, -1, -1, -1 };
+        int usedIndices[4] = {-1, -1, -1, -1};
         usedIndices[correctIndex] = wordIndex;
 
         options[correctIndex] = correctWord->meanings[rand() % correctWord->meaningCount];
@@ -684,7 +858,9 @@ void createQuiz(UserLearnedWords *user) {
                 int randomWordIndex;
                 do {
                     randomWordIndex = rand() % user->learnedwords.size;
-                } while (randomWordIndex == wordIndex || usedIndices[0] == randomWordIndex || usedIndices[1] == randomWordIndex || usedIndices[2] == randomWordIndex || usedIndices[3] == randomWordIndex);
+                } while (randomWordIndex == wordIndex || usedIndices[0] == randomWordIndex ||
+                         usedIndices[1] == randomWordIndex || usedIndices[2] == randomWordIndex ||
+                         usedIndices[3] == randomWordIndex);
                 usedIndices[j] = randomWordIndex;
 
                 Word *randomWord = &user->learnedwords.words[randomWordIndex];
@@ -763,42 +939,41 @@ void editInformation(UserDatabase *db) {
     }
 }
 
-void UserMenu(UserDatabase* usrdtbs,UserLearnedWords*  lrndwrd){
-    ltrboxwords *ltrltr = nullptr;
-    printf("Welcome To User Panel!\n");
-    printf("Type What You Want\n1.Search\n2.LitnerBox\n3.Test\n4.ShowInformation\n5.EditInformation\n6.Back\n");
+void UserMenu(UserDatabase *usrdtbs) {
+    while (1) {
+        printf("Welcome To User Panel!\n");
+        printf("Type What You Want\n1.Search\n2.LitnerBox\n3.Test\n4.ShowInformation\n5.EditInformation\n6.Back\n");
 
-    int num2;
-    scanf("%d", &num2);
+        int num2;
+        scanf("%d", &num2);
 
-    switch (num2) {
-        case 1:
-            searching_new_words();
-            break;
-        case 2: {
-            LitnerFullPack(ltrltr);
-            break;
+        switch (num2) {
+            case 1:
+                searching_new_words(&usrdtbs->users[usrdtbs->currentUserIndex]);
+                break;
+            case 2: {
+                litnerBoxMenu(&usrdtbs->users[usrdtbs->currentUserIndex]);
+                break;
+            }
+            case 3: {
+                break;
+            }
+            case 4 : {
+                showUserInformation(usrdtbs);
+                break;
+            }
+            case 5 : {
+                editInformation(usrdtbs);
+                break;
+            }
+            default:
+                return;
         }
-        case 3: {
-            createQuiz(lrndwrd);
-            break;
-        }
-        case 4 :{
-            showUserInformation(usrdtbs);
-            break;
-        }
-        case 5 :{
-            editInformation(usrdtbs);
-            break;
-        }
-        default:
-            break;
     }
-
 }
 
 
-void UserOrAdmin(UserDatabase* usrdtbs, ltrboxwords* ltrltr, UserLearnedWords* lrndwrd) {
+void UserOrAdmin(UserDatabase *usrdtbs) {
     char username_input[Max_Username_Length];
     char password_input[Max_Password_Length];
 
@@ -808,15 +983,15 @@ void UserOrAdmin(UserDatabase* usrdtbs, ltrboxwords* ltrltr, UserLearnedWords* l
     scanf("%s", password_input);
 
     for (int i = 0; i < usrdtbs->size; i++) {
-        if (strcmp(usrdtbs->users[i].username, username_input) == 0 && strcmp(usrdtbs->users[i].password, password_input) == 0) {
+        if (strcmp(usrdtbs->users[i].username, username_input) == 0 &&
+            strcmp(usrdtbs->users[i].password, password_input) == 0) {
             usrdtbs->currentUserIndex = i;  // Set the current user index
             printf("Login Successful!\n");
             if (strcmp(username_input, "Admin") == 0 && strcmp(password_input, "Admin") == 0) {
                 printf("Welcome To Admin panel\n");
                 adminMenu(usrdtbs);
             } else {
-                printf("Welcome To User panel\n");
-                UserMenu(usrdtbs, lrndwrd);
+                UserMenu(usrdtbs);
             }
             return;
         }
@@ -826,17 +1001,11 @@ void UserOrAdmin(UserDatabase* usrdtbs, ltrboxwords* ltrltr, UserLearnedWords* l
 }
 
 
-
-
-
-
 int main() {
-    litnerbox_head box;
-    initLeitnerBox(&box);
     UserDatabase database;
     database.size = 0;
-    ltrboxwords ltrltr ;
-    UserLearnedWords *learnedWords = nullptr;
+    loadAdminFromFile();
+    loadUsersFromFile(&database);
     printf("Welcome!\n");
     int choice;
 
@@ -846,7 +1015,7 @@ int main() {
         printf("2. Sign In\n");
         printf("3. Forgot Password\n");
         printf("4. Exit\n");
-        printf("Enter your choice: ");
+        printf("Enter your choice: \n");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -854,7 +1023,7 @@ int main() {
                 signUp(&database);
                 break;
             case 2:
-                UserOrAdmin(&database,&ltrltr,learnedWords);
+                UserOrAdmin(&database);
                 break;
             case 3:
                 forgotPassword(&database);
@@ -864,6 +1033,7 @@ int main() {
                 return 0;
             default:
                 printf("Invalid choice! Please try again.\n");
+                break;
         }
 
     }
