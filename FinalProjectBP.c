@@ -46,6 +46,7 @@ typedef struct {
     struct LitnerBoxWord* review;
     struct LitnerBoxWord* consolidation;
     struct LitnerBoxWord* learned;
+    int leanrnedwordscount ;
 
 } User;
 
@@ -648,6 +649,7 @@ void iterateNewWords(User *user) {
     printf("No more new words to review!\n");
 }
 
+
 void iterateReviewWords(User *user) {
     struct LitnerBoxWord *list = user->review;
     while (list != NULL) {
@@ -723,6 +725,7 @@ void iterateConsolidationWords(User *user) {
                 }
                 break;
             case 3:
+                user->leanrnedwordscount ++;
                 // remove word from consolidation list and add it to learned list
                 if (user->learned == NULL) {
                     user->learned = list;
@@ -826,14 +829,14 @@ void litnerBoxMenu(User *user) {
 
 
 
-void createQuiz(UserLearnedWords *user) {
-    if (user->learnedwords.size == 0) {
+void createQuiz(User *user) {
+    if (user->leanrnedwordscount== 0) {
         printf("Warning: You haven't learned any words yet!\n");
         return;
     }
 
     srand(time(0));
-    int numQuestions = user->learnedwords.size < 10 ? user->learnedwords.size : 10;
+    int numQuestions = user->leanrnedwordscount < 10 ? user->leanrnedwordscount : 10;
     //user->learnedwords.size < 10: This condition checks if the user has learned fewer than 10 words.
     //? user->learnedwords.size : 10: This is the ternary operator. It works like an inline if-else statement:
     //If user->learnedwords.size < 10 is true, numQuestions is set to user->learnedwords.size.
@@ -844,8 +847,8 @@ void createQuiz(UserLearnedWords *user) {
 
     for (int i = 0; i < numQuestions; i++) {
         int correctIndex = rand() % 4;
-        int wordIndex = rand() % user->learnedwords.size;
-        Word *correctWord = &user->learnedwords.words[wordIndex];
+        int wordIndex = rand() % user->leanrnedwordscount;
+        Word *correctWord = (Word *) &user->learned[wordIndex];
 
         printf("Question %d: What is the meaning of the word '%s'?\n", i + 1, correctWord->word);
 
@@ -859,13 +862,13 @@ void createQuiz(UserLearnedWords *user) {
             if (j != correctIndex) {
                 int randomWordIndex;
                 do {
-                    randomWordIndex = rand() % user->learnedwords.size;
+                    randomWordIndex = rand() % user->leanrnedwordscount;
                 } while (randomWordIndex == wordIndex || usedIndices[0] == randomWordIndex ||
                          usedIndices[1] == randomWordIndex || usedIndices[2] == randomWordIndex ||
                          usedIndices[3] == randomWordIndex);
                 usedIndices[j] = randomWordIndex;
 
-                Word *randomWord = &user->learnedwords.words[randomWordIndex];
+                Word *randomWord = (Word *) &user->learned->word.word[randomWordIndex];
                 options[j] = randomWord->meanings[rand() % randomWord->meaningCount];
             }
         }
@@ -958,7 +961,7 @@ void UserMenu(UserDatabase *usrdtbs) {
                 break;
             }
             case 3: {
-
+                createQuiz(usrdtbs->users);
                 break;
             }
             case 4 : {
